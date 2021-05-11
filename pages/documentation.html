@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ANN Documentation</title>
+        <meta charset="utf8">
+        <link rel="stylesheet" href="../style/style.css">
+        <link rel="stylesheet" type="text/css" href="../style/prism.css">
+        <script src="../scripts/prism.js"></script>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+        <script>
+            MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+              }
+            };
+          </script>
+            
+    </head>
+    <body>
+      <div id="doc-header">
+        <h2>ANN Documentation</h2>
+    </div>
+    <div id="doc-container">
+        <h3>Technical features</h3>
+        <p>
+          <span class="quote">&ldquo;</span>
+          The model implemented is a classic <b>Input-Hidden-Output</b> layers neural network 
+          with <b>no bias</b> neurons. <span class="quote">&rdquo;</span> [<a href="about.html">About Logic Gate ANN</a>]
+        </p>
+
+        <p>
+          It is assumed that the input, hidden and output layers have $d, e$ and $f$ neurons respectively, and 
+          the weigths between the input and hidden layer have the form $w_{i_{j}h_k}$ where $j$ is the index of the
+          input neuron and $k$ is the index of the hidden neuron.
+          In the same manner one can define the weigths $w_{h_{k}o_l}$ between the hidden and output neurons where
+          $k, l$ are the indexes of the hidden, output neurons respectively. 
+        </p>
+
+        <figure>
+          <img src="../images/Artificial_Neural_Network.jpg" alt="Artificial Neural Network model">
+          <figcaption>Fig.1 - Artificial Neural Network model.</figcaption>
+        </figure> 
+
+        <p>In javascript the layers are defined as arrays of numeric values, and weigths as double indexed
+          numeric arrays.
+          <pre class="language-javascript"><code>/**
+*  Dimension of layers
+*/
+const i_length = d;
+const o_length = f;
+const h_length = e;
+
+/* 
+* Layers
+*/
+var input_layer = [];
+var hidden_layer = [];
+var output_layer = [];
+
+/*
+* Weights
+*/
+var w_ih = [];
+var w_ho = [];</code></pre>
+        </p>
+
+        <h3>Initialization</h3>
+        <p>
+          Initially, all the weigths are randomly generated with a value $r \in (0, 1)$
+          <pre class="language-javascript"><code>function initRandomWeights(){
+  w_ih = [];
+  w_ho = [];
+  for(let i = 0; i < i_length; i++){
+    let wi = [];
+    for(let j = 0; j < h_length; j++){
+      wi.push(Math.random());
+    }
+    w_ih.push(wi);
+  }
+  for(let i = 0; i < h_length; i++){
+    let wh = [];
+    for(let j = 0; j < o_length; j++){
+      wh.push(Math.random());
+    }
+    w_ho.push(wh);
+  }
+}</code></pre>
+        </p>
+        <h3>Training set</h3>
+        <p>
+          The training set used to feed the ANN is made of a large number of $(Input, Objective)$ tuple
+          where $Input$ encodes the data used to activate the input neurons, and $Objective$ contains an
+          <span class="in-bl">$f$-dimensional</span> array of numeric values used to encode the exact value 
+          of activation expected from the output neurons.
+        </p>
+        <p>
+          In Javascript, the training data are encoded in the form: 
+          <pre class="language-javascript"><code>{
+  input: inputValues,
+  objective: objectiveValues
+}</code></pre>
+        </p>
+        <p>
+          The $input$ and $objective$ are directly injected into the input neurons and the ANN objective array. 
+        </p>
+
+        <pre class="language-javascript"><code>/**
+* Array containing the Objective values
+*/
+var objective = [];
+
+/**
+ * Assuming data is an object in form of:
+ * {input: String, objective: Array<Number>}.
+ * Sets the ANN's input_layer and objective arrays 
+ * by parsing the data.input and data.objective values
+ * and using the values of activation stored in 
+ * activationRange and noActivationRange.
+ * Prepares the ANN to propagate the input and calculate
+ * the error.  
+ */
+function initInputAndObjective(data){
+    objective = data.objective;
+    let inputConstuctor = [];
+    for(let ch = 0; ch < data.input.length; ch++) {
+        let cha = Number(data.input.charAt(ch));
+        (cha==0) ? inputConstuctor.push(noActivationRange) : 
+          inputConstuctor.push(activationRange);
+    }
+    input_layer = inputConstuctor;
+}</code></pre>
+    <p>
+      Note that the initialization function uses two values which represent an "high" and "low"
+      activation value, they are defined in a "variables" script in the following manner:
+      <pre class="language-javascript"><code>const noActivationRange = 0;
+const activationRange = 1;
+      </code></pre>
+    </p>
+    <h3>Propagation & Activation function</h3>
+        <p>
+          It is convenient to provide functions called <i>net</i>, defined in the following manner:
+          <div class="center-equation">
+          $net_{h_{j}} = \sum_{n=1}^{d}i_n\cdot w_{i_{n}h_j}$ 
+          and 
+          $net_{o_{k}} = \sum_{n=1}^{e}h_n\cdot w_{h_{n}o_k}$
+        </div>
+        They can be used to activate the neurons after being given to input to a generic
+        activation function. 
+      </p>
+        <p>
+          in this project the $\sigma(x) = \frac{1}{1+e^{-x}}$ function is used. 
+        </p>
+        <figure>
+          <img src="../images/sigmoid.JPG" alt="Sigmoid function">
+          <figcaption>Fig.2 - Sigmoid function plot.</figcaption>
+        </figure> 
+        <p>
+          Hence the activation of hidden and output neurons is achieved by calculating the 
+          numeric value of the following functions:
+          <div class="center-equation">
+            $act_{h_{j}} = \sigma(\sum_{n=1}^{d}i_n\cdot w_{i_{n}h_j}) = \sigma(net_{h_{j}})$ 
+            and 
+            $act_{o_{k}} = \sigma(\sum_{n=1}^{e}h_n\cdot w_{h_{n}o_k}) = \sigma(net_{o_{k}})$
+          </div>
+        </p>
+        <pre class="language-javascript"><code>/**
+ * The activation function chosen for the ANN.
+ */
+function sigmoid(x){
+    return activationRange/(1+Math.pow(Math.E,-x));
+}
+/**
+ * calculate the net function of the j-th hidden neuron 
+ */
+function neth(j){
+    let sum = 0;
+    for(let n = 0; n < i_length; n++) {
+        sum += input_layer[n]*w_ih[n][j];
+    }
+    return sum;
+}
+
+/**
+ * calculate the net function of the k-th output neuron 
+ */
+function neto(k){
+    let sum = 0;
+    for(let n = 0; n < h_length; n++) {
+        sum += hidden_layer[n]*w_ho[n][k];
+    }
+    return sum;
+}
+
+/**
+ * calculate the activation function of the j-th 
+ * hidden neuron 
+ */
+function acth(j){
+    return sigmoid(neth(j));
+}
+
+/**
+ * calculate the activation function of the k-th 
+ * output neuron 
+ */
+function acto(k){
+    return sigmoid(neto(k));
+}</code></pre>
+      <p>
+        By propagating the input and calculating the activation of all output neurons, 
+        it is possible to estimate the effectiveness of the neural network by calculating 
+        the error for the <span class="in-bl">$k$−th</span> output neuron and, subsequently, the total error:
+      </p>
+      <div class="center-equation">
+        $E_{o_k} = \frac{1}{2}(obj_k - act_{o_k})^2$
+        and 
+        $E_{tot} = \sum_{n=1}^{f}\frac{1}{2}(obj_n - act_{o_n})^2$
+      </div>
+      <p>The error is multiplied by $\frac{1}{2}$
+        for the purpose of simplifying the calculation later, and in addition the error is squared
+        so that there are non-negative solutions (the error is a measure of the distance between 
+        the perfect function to simulate and the approximated function generated by the ANN).</p>
+        <pre class="language-javascript"><code>/**
+ * calculate the error function of the k-th output neuron 
+ */
+function eo(k){
+    return Math.pow(objective[k] - output_layer[k], 2)/2;
+}
+
+/**
+ * calculate the total error function of the ANN 
+ */
+function etot(){
+    let sum = 0;
+    for(let n = 0; n < o_length; n++){
+        sum += eo(n); 
+    }
+    return sum;
+}</code></pre>
+      <h3>Back-propagation</h3>
+      <p>
+        One can introduce a mathematical model for the increase of the ANN’s accuracy for the generic input, hidden and output neuron, respectively $i_x$, $h_y$, $o_z$.
+        Considering the propagation of the data from the hidden layer to the output layer it is possible to write the variation of
+        the error with respect to a generic weight $w_{h_{y}o_z}$ using the chain rule:
+        <div class="center-equation">
+          \begin{equation}
+          \frac{\partial E_{tot}}{\partial w_{h_{y}o_z}} = 
+        \frac{\partial E_{tot}}{\partial act_{o_{z}}} \cdot 
+        \frac{\partial act_{o_{z}}}{\partial net_{o_{z}}} \cdot 
+        \frac{\partial net_{o_{z}}}{\partial w_{h_{y}o_z}}
+        \end{equation} 
+        </div>
+        where:
+        <div class="center-equation">
+        \begin{equation}
+        \label{actoz}
+        \frac{\partial E_{tot}}{\partial act_{o_{z}}} = 
+        \frac{\partial [ \frac{1}{2} \sum_{n = 1}^{f} (obj_n - act_{o_n})^2 ]}
+        {\partial act_{o_z}} = 
+        \end{equation}
+        \begin{equation}
+        \frac{\partial [ \frac{1}{2} (obj_z - act_{o_z})^2 ]}
+        {\partial act_{o_z}} = 
+        \frac{\partial [ \frac{1}{2} (obj_z^2 - 2act_{o_z} \cdot act_{o_z} + act_{o_z}^2) ]}
+        {\partial act_{o_z}} = act_{o_z} - obj_z
+        \end{equation}
+        <br>
+        \begin{equation}
+	\label{actneoz}
+	\frac{\partial act_{o_z}}{\partial net{o_z}} = 
+	\frac{\partial \sigma(net{o_z})}{\partial net{o_z}} = 
+	act_{o_z} \cdot (1 - act_{o_z}) \
+	\end{equation} 
+        <br>
+        \begin{equation}
+        \frac{\partial net_{o_z}}{\partial w_{h_yo_z}} = 
+        \frac{\partial \sum_{n = 1}^{e} act_{h_n} \cdot w_{h_no_z}}
+        {\partial w_{h_yo_z}} = 
+        \frac{\partial  act_{h_y} \cdot w_{h_yo_z}}
+        {\partial w_{h_yo_z}} = act_{h_y}
+      \end{equation}
+        </div>
+        Hence the multidimensional direction that allows to reduce the total error $E_{tot}$ 
+        for a generic weight $w_{h_yo_z}$ is:
+        <div class="center-equation">
+          \begin{equation}
+          \frac{\partial E_{tot}}{\partial w_{h_{y}o_z}} =
+          (act_{o_z} - obj_z) \cdot 
+          act_{o_z} \cdot (1 - act_{o_z}) \cdot
+          act_{h_y}
+          \end{equation}
+        </div>
+      </p>
+      <p>
+        One can extend the formula to calculate the impact of a generic weigth between the input and 
+        hidden layer $w_{i_{x}h_y}$:
+      </p>
+      <div class="center-equation">
+        \begin{equation}
+        \frac{\partial E_{tot}}{\partial w_{i_{x}h_y}} = \sum\limits_{z=1}^{f}
+        \frac{\partial E_{tot}}{\partial act_{o_{z}}} \cdot 
+        \frac{\partial act_{o_{z}}}{\partial net_{o_{z}}} \cdot 
+        \frac{\partial net_{o_{z}}}{\partial act_{h_y}} \cdot
+        \frac{\partial act_{h_y}}{\partial net_{h_y}} \cdot
+        \frac{\partial net_{h_y}}{\partial w_{i_xh_y}}
+        \end{equation}       
+      </div>
+      <p>where:</p>
+      <div class="center-equation">
+        \begin{equation}
+        \frac{\partial net_{o_{z}}}{\partial act_{h_y}} = 
+        \frac{\partial \sum_{n=1}^{e} act_{h_n} \cdot w_{h_no_z}}{\partial act_{h_y}} = w_{h_yo_z}
+      \end{equation}
+      \begin{equation}
+      \frac{\partial act_{h_y}}{\partial net_{h_y}} = 
+      act_{h_y} \cdot (1 - act_{h_y})
+      \end{equation}
+      \begin{equation}
+      \frac{\partial net_{h_y}}{\partial w_{i_{x}h_y}} =
+      \frac{\partial \sum_{n=1}^{d} i_n \cdot w_{i_nh_y}}{\partial w_{i_{x}h_{y}}} = i_x
+      \end{equation}
+      </div>
+      <p>
+        It is possible to define the term $\delta_z = [(-act_{o_z} \cdot obj_z)\cdot (act_{o_z} \cdot (1 - act_{o_z}) \cdot (act_{h_y})]$. 
+	The weights of the form $w_{h_yo_z}$ and $w_{i_xh_y}$ will be updated as follows:
+      </p>
+      <div class="center-equation">
+        \begin{equation}
+			w_{h_yo_z} \Leftarrow \delta_z \cdot \alpha
+			\end{equation}
+			\begin{equation}
+			w_{i_xh_y} \Leftarrow (
+			\sum\limits_{z=1}^{f} \delta_z \cdot
+			(1-act_{h_y}) \cdot w_{h_yo_z} \cdot i_x
+			) \cdot \alpha
+			\end{equation}
+      </div>
+      <p>
+        where $\alpha$ is the learning rate.
+      </p>
+      <pre class="language-javascript"><code>/**
+* Learning rate
+*/
+const learning_rate = 0.5;
+
+/**
+ * calculate the delta parameter used to update weights
+ */
+function delta(y, z){
+    return (output_layer[z]-objective[z]) * 
+      output_layer[z] * (1-output_layer[z]) * hidden_layer[y];
+}
+
+/**
+ * calculate the numeric derivative of the total error
+ * with respect to w_ho[y][z].
+ * The value is multiplied by learning_rate and is
+ * used to update the weight w_ho[y][z].
+ */
+function newWho(y, z){
+    return delta(y, z)*learning_rate;
+}
+
+/**
+ * calculate the numeric derivative of the total error
+ * with respect to w_ih[x][y].
+ * The value is multiplied by learning_rate and is
+ * used to update the weight w_ih[x][y].
+ */
+function newWih(x,y){
+    let sum = 0;
+    for(let z = 0; z < o_length; z++) {
+        sum += delta(y,z) * (1 - hidden_layer[y]) * 
+          w_ho[y][z] * input_layer[x];
+    }
+    return sum * learning_rate;  
+}</code></pre>
+    <p>
+      In Javascript, the process of propagation and back-propagation is implemented as follows:
+    </p>
+    <pre class="language-javascript"><code>/**
+ * Propagates the input by activating all the neurons
+ * of hidden and output layers.
+ */
+function propagate(){
+    for(let n = 0; n < h_length; n++) {
+        hidden_layer[n] = acth(n);
+    }
+    for(let n = 0; n < o_length; n++) {
+        output_layer[n] = acto(n);
+    }
+}
+
+/**
+ * Calculates the contribution of every weight to
+ * the error produced by the ANN and updates the 
+ * weights accordingly.
+ */
+function backpropagate(){
+    for(let x = 0; x < i_length; x++){
+        for(let y = 0; y < h_length; y++) {
+            w_ih[x][y] -= newWih(x,y);
+        }
+    }
+    for(let y = 0; y < h_length; y++){
+        for(let z = 0; z < o_length; z++) {
+            w_ho[y][z] -= newWho(y,z);
+        }
+    }
+}</code></pre>
+
+
+    </div>
+    </body>
+</html>

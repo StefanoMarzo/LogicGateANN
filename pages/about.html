@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="utf8">
+        <title>About Logic Gate ANN</title>
+        <link rel="stylesheet" href="../style/style.css">
+    </head>
+    <body>
+        <div id="doc-header">
+            <h2>About Logic Gate ANN</h2>
+        </div>
+        <div id="doc-container">
+            <h3>Introduction</h3>
+            <p>
+                Logic Gate ANN is a lightweight, easy to use project developed to share a simple
+                <b>implementation of an ANN</b>. The project is coded using only client web technologies
+                such as <b>Javascript</b> and it doesn't require a server to elaborate data.
+            </p>
+            <p>
+                The aim of Logic Gate ANN is to provide complex discrete functions which approximate
+                simple <b>binary logic operators</b>. It could seem a paradox, but it might be an easy
+                <b>early approach</b> to the world of <b>Artificial Neural Networks</b>.
+            </p>
+            <figure>
+                <img src="../images/2d-function-approximation-example.png" alt="Function approximation example">
+                <figcaption>Fig.1 - Function approximation example.</figcaption>
+              </figure> 
+            <h3>Logic Gates</h3>
+            <p>
+                Logic operators are one of the easiest operations that computers can handle.
+                A logic operator is commonly implemented by using the so-called <b>logic gates</b>. 
+                Gates are incredibly small electronic components which expose one or more 
+                input and one or more output.
+                The output depends on the <b>input</b> and on the <b>architecture</b> of the electronic
+                components inside the gate.
+            </p>
+            <p>
+                These operators are called 'logic' because of the nature of the operation they
+                serve. In fact, a logic operator can be treated using <b>boolean algebra</b> and
+                <b>logical variables</b>.
+                It is assumed that a logical variable is a bit of information that can only 
+                have two possible values: <b>0</b> or <b>1</b>.
+            </p>
+            <p>
+                Logic operators can be fully described using <b>Truth Tables</b>, the latter display
+                all the combinations of the logical variables the take as input and the output 
+                expected for each one of them.
+                <i>Complex operators can always be reduced to a longer expression using only a single
+                    operator (NAND).</i> 
+            </p>
+            <figure>
+                <table class="illustrate">
+                    <tr><th>A</th><th>B</th><th>A <i>XOR</i> B</th></tr>
+                    <tr><td>1</td><td>1</td><td>0</td></tr>
+                    <tr><td>1</td><td>0</td><td>1</td></tr>
+                    <tr><td>0</td><td>1</td><td>1</td></tr>
+                    <tr><td>0</td><td>0</td><td>0</td></tr>
+                </table>
+                <table class="illustrate">
+                    <tr><th>A</th><th>B</th><th>A <i>NAND</i> B</th></tr>
+                    <tr><td>1</td><td>1</td><td>0</td></tr>
+                    <tr><td>1</td><td>0</td><td>1</td></tr>
+                    <tr><td>0</td><td>1</td><td>1</td></tr>
+                    <tr><td>0</td><td>0</td><td>1</td></tr>
+                </table>
+                <figcaption>Tab 1 - Truth Tables of XOR and NAND operators.</figcaption>
+            </figure>
+            <h3>The Artificial Neural Network</h3>
+            <p>
+                The ANN proposed aims to simulate the behaviour of the most common binary logic
+                gates E.g. <b>AND</b>, <b>OR</b>, <b>NAND</b>, <b>NOR</b>, <b>XOR</b> ... 
+            </p>
+            <p>
+                The model implemented is a classic <b>Input-Hidden-Output</b> layers neural network 
+                with <b>no bias</b> neurons.
+                The Input layer has two neurons, as well as the output layer. The hidden layer
+                uses a variable number of neurons that the user can set (using less then 3 
+                hidden neurons results in an insufficient space of development and inaccurate 
+                predictions). 
+            </p>
+            <figure>
+                <img src="../images/Artificial_Neural_Network.jpg" alt="Artificial Neural Network model">
+                <figcaption>Fig.2 - Artificial Neural Network model.</figcaption>
+            </figure> 
+            <p>
+                Once selected the logic gate to simulate, users can set the input using the option fields
+                within the input neurons.
+                By clicking the <b>train</b> button the system will generate a training example in form of 
+                <b>input and objective</b>. The objective is automatically calculated according to the gate selected
+                using an actual <b>logic expression</b>.
+                The (Input, Objective) tuple will be propagated in the ANN, and the output <b>activation</b> result 
+                will be used to correct the weights and decrease the total error.
+            </p>
+            <figure>
+                <img src="../images/neurons_and_weights.JPG" alt="Neurons and weights">
+                <figcaption>Fig.3 - Neurons and weights.</figcaption>
+              </figure> 
+            <p>
+                One can simply train the ANN using <b>random examples</b>, there is an input field to set the number
+                of training data that will be propagated in the ANN. The total data propagated will be counted
+                in a provided field. Users can check the <b>accuracy value</b> to monitor the reliability of
+                the machine in the current state.
+                The accuracy, in this case, is the total <b>distance</b> of the ANN from a <b>perfect approximation</b> of
+                the logical operator. 
+            </p>
+            <figure>
+                <img src="../images/activation.JPG" alt="Activation of output layer">
+                <figcaption>Fig.4 - Activation of the output layer.</figcaption>
+            </figure> 
+        </div>
+    </body>
+</html>

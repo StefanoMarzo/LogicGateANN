@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf8">
+    <title>Best Learning Rate</title>
+    <script src="../scripts/variables.js"></script>
+    <script src="../scripts/ANN.js"></script>
+    <script src="../scripts/findLearningRate.js"></script>
+    <link rel="stylesheet" href="../style/style.css">    
+</head>
+
+<body>
+    <div id="doc-header">
+        <h2>Finding the best learning rate</h2>
+    </div>
+    <div id="doc-container">
+        <h3>Introduction</h3>
+        <p>
+            Fine tuning the <b>learning rate</b> of the ANNs leads to optimize the computational model in terms of 
+            number of batch examples in form of <i class="mathSerif"><b>(Input, Objective)</b></i> tuple required 
+            to achieve a reasonable accuracy.
+        </p>
+        <p>
+            This project implements a simplified form of an method called
+            <b>Cyclical Learning Rates</b> to approximate the best learning rate for randomly initialized ANNs.
+            <i>Leslie N. Smith (2015). <a href="https://arxiv.org/abs/1506.01186">Cyclical Learning Rates for Training Neural Networks.</a></i>
+        </p>
+        <h3>Interval of working parameters</h3>
+        <p>
+            To find the best learning rate for an ANN model, one would primarily determine an interval 
+            One can define an exponential growth function used 
+        </p>
+
+        <canvas id="canvas" width="400" height="400" style="background: rgb(250, 250, 250);"></canvas>
+
+    </div>
+
+</body>
+
+</html>

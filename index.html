@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8">
+        <link href="style/style.css" rel="stylesheet">
+        <link href="style/slidercheckbox.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@1,700&family=Nunito:wght@300&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <div id="menu-controls">
+            <span id="menu-title"><h2>ANN Logic Gate</h2>
+                
+            </span>
+            <div id="controls">
+                <table id="trainAndTest">
+                    <tr>
+                        <td><span class="info">?<div class="infotext">
+                            <p>The <b>ANN</b> model proposed can <b>simulate</b> the behaviour of the most common binary <b>logic gates</b>. 
+                            </p> 
+                            <p>The choosen gate is displayed alongside in a light blue box.</p> 
+                            <p>Use the <u>change</u> link to select a different one.</p> </div></span></td>
+                        <td>
+                            <span id="changeGateControl">
+                                Logic Gate: <span id="gateText"></span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="jsLink" onclick="showLogicGateSelector()">change</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="info">?<div class="infotext">
+                            <p>Select the inputs desired using the option fields within the <b>input neurons</b>.</p>
+                            <p>Clicking the <b>Train</b> button the system will evaluate the inputs and generate the exact computed output.</p>
+                            <p>These data will be <b>propagate</b> in the ANN and <b>weigths</b> will be <b>updated</b> accordingly.</p>
+                        </div></span></td>
+                        <td>Train with <span>i<sub>0</sub>, i<sub>1</sub></span> inputs</td>
+                        <td><button id="propagate">Train</button></td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="info">?<div class="infotext">
+                            <p>Use the input field to <b>type a number</b>.</p>
+                            <p>The system will use the number to produce as many <b>random</b> examples which will be used to <b>train the ANN</b>.</p>
+                        </div></span></td>
+                        <td>
+                            <div id="n-examples">Train <input type="number" value="100" placeholder="number" id="times" /> times</div>
+                        </td>
+                        <td>
+                            <button id="train">Train</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="info">?<div class="infotext">
+                            <p>Select the inputs desired using the <b>input neurons</b>.</p>
+                            <p>By clicking the <b>Test</b> button, the ANN will evaluate the inputs.</p>
+                            <p>The exact result will be highlighted with a <b>light green outer border</b> in the correspondent output neuron. </p>
+                            <p>The ANN's computed result will be displayed lighting up in green the correspondent output neuron.</p>
+                        </div></span></td>
+                        <td>Test with <span>i<sub>0</sub>, i<sub>1</sub></span> inputs</td>
+                        <td><button id="test">Test</button></td>
+                    </tr>
+                    
+                    <tr>
+                        <td><span class="info">?<div class="infotext">
+                            <p>The ANN will save the <b>number of example</b> used to train it.</p>
+                            <p><b>Changing</b> the simulated <b>logic gate</b> will <b>reset</b> this number to 0.</p>
+                            <p>The <b>accuracy</b> measure the <b>reliability</b> of the ANN,
+                            it is calculated <b>testing a set of inputs</b> and elaborating the <b>total error</b>.</p>
+                        </div></span></td>
+                        <td>
+                            <span class="infoANN">Examples fed: <span id="examplesPropagate">0</span></span>
+                        </td>
+                        <td>
+                            <span class="infoANN">Accuracy: <span id="accuracy">00.00</span>%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="info">?<div class="infotext">
+                            <p>This option allows users to <b>track the progress</b> of the ANN by <b>displaying the weigths</b>.</p>
+                            <p>Weigths are shown in form of a <b>table</b> between the <b>neuron layers</b> involved</p>
+                            <p>Weigths table will be <b>updated</b> after every <b>traing process</b>.</p>
+                        </div></span></td>
+                        <td>Show weigths</td>
+                        <td>
+                        <label class="switch">
+                            <input onclick="toggleWeigths()" id="weigthsCheckbox" type="checkbox">
+                            <span class="slider round"></span>
+                          </label>
+                        </td>
+                    </tr>
+                </table>
+                
+                
+            </div>
+            <br>
+        </div>
+        <div id="opacityDiv"></div>
+        <div id="logicGateSelector">
+            <p>Select a logic operator:</p> <div id="logicalOperatorSelector"></div><br>
+            <button onclick="changeLogicGate()">Confirm</button><span class="jsLink" onclick="cancelChange()">Cancel</span>
+            <p>Changing the logic operator requests the ANN to be reload <br> <i>All training progress will be lost</i></p>
+        </div>
+        
+        <div id="ANN">
+            <div class="layer" id="input_layer"></div>
+            <div class="weigth"><table id="w_ih"></table></div>
+            <div class="layer" id="hidden_layer"></div>
+            <div class="weigth"><table id="w_ho"></table></div>
+            <div class="layer" id="output_layer"></div>
+        </div>
+        <div id="links">
+            <a href="pages/about.html">About this project</a> 
+            <a href="pages/documentation.html">Documentation</a> 
+        </div>
+
+        <div class="separator">
+            <hr>
+            <h3 class="subSection">Related projects</h3>
+        </div>
+
+        <script src="scripts/variables.js"></script>
+        <script src="scripts/ANN.js"></script>
+        <script src="scripts/graphics.js"></script>
+        <script src="scripts/controls.js"></script>
+    </body>
+</html>
